@@ -1,0 +1,90 @@
+{% extends 'home.html' %}
+
+{% block title %}{{ course.title }} - 線上課程平台{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+
+    <!-- 課程資訊卡 -->
+    <div class="bg-white rounded-lg shadow-md p-8 mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-3">{{ course.title }}</h2>
+        <p class="text-gray-600 mb-4">{{ course.description }}</p>
+
+        <div class="flex flex-wrap gap-4 text-sm text-gray-500 border-t pt-4">
+            <div>
+                <span class="font-semibold">授課老師：</span>
+                {% for teacher in course.teachers.all %}
+                {{ teacher.name }}{% if not forloop.last %}、{% endif %}
+                {% empty %}
+                尚未指派
+                {% endfor %}
+            </div>
+            <div>
+                <span class="font-semibold">建立時間：</span>
+                {{ course.created_at|date:"Y-m-d H:i" }}
+            </div>
+            <div>
+                <span class="font-semibold">已報名人數：</span>
+                {{ enrollments|length }} 人
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+        <!-- 報名表單 -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">學生報名</h3>
+
+            {% if students %}
+            <form method="post" action="{% url 'courses:course-detail' course.pk %}">
+                {% csrf_token %}
+                <label for="student_id" class="block text-sm font-medium text-gray-700 mb-2">
+                    選擇學生
+                </label>
+                <select name="student_id" id="student_id"
+                    class="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    {% for student in students %}
+                    <option value="{{ student.id }}">{{ student.name }}（{{ student.get_level_display }}）</option>
+                    {% endfor %}
+                </select>
+                <button type="submit"
+                    class="w-full bg-blue-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-blue-700 transition">
+                    確認報名
+                </button>
+            </form>
+            {% else %}
+            <p class="text-gray-500">目前還沒有學生資料，請先到
+                <a href="/admin/" class="text-blue-600 underline" target="_blank">管理後台</a> 新增。
+            </p>
+            {% endif %}
+        </div>
+
+        <!-- 已報名學生清單 -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">已報名學生</h3>
+
+            {% if enrollments %}
+            <ul class="divide-y divide-gray-200">
+                {% for enrollment in enrollments %}
+                <li class="py-3 flex justify-between items-center">
+                    <span class="text-gray-800">{{ enrollment.student.name }}</span>
+                    <span class="text-xs text-gray-400">{{ enrollment.enrolled_at|date:"Y-m-d H:i" }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-gray-500">目前還沒有學生報名這門課程</p>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <div class="mt-8">
+        <a href="{% url 'courses:course-list' %}" class="text-blue-600 hover:underline">
+            &larr; 返回課程列表
+        </a>
+    </div>
+
+</div>
+{% endblock %}

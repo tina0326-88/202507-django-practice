@@ -1,0 +1,44 @@
+{% extends 'home.html' %}
+
+{% block title %}學生列表 - 線上課程平台{% endblock %}
+
+{% block content %}
+<h2 class="text-2xl font-bold text-gray-800 mb-6">學生列表</h2>
+
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <table class="w-full text-left">
+        <thead class="bg-gray-100 text-gray-700 text-sm uppercase">
+            <tr>
+                <th class="px-6 py-3">姓名</th>
+                <th class="px-6 py-3">電子信箱</th>
+                <th class="px-6 py-3">程度</th>
+                <th class="px-6 py-3">已報名課程</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+            {% for student in students %}
+            <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 font-medium text-gray-800">{{ student.name }}</td>
+                <td class="px-6 py-4 text-gray-500 text-sm">{{ student.email }}</td>
+                <td class="px-6 py-4">
+                    <span class="inline-block bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">
+                        {{ student.get_level_display }}
+                    </span>
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-600">
+                    {% for course in student.courses.all %}
+                    {{ course.title }}{% if not forloop.last %}、{% endif %}
+                    {% empty %}
+                    <span class="text-gray-400">尚未報名任何課程</span>
+                    {% endfor %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="px-6 py-12 text-center text-gray-500">目前還沒有任何學生資料</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

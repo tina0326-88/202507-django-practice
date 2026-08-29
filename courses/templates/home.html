@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}線上課程平台{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+    <!-- 導航欄 -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <h1 class="text-xl font-bold">
+                    <a href="{% url 'courses:course-list' %}" class="hover:text-blue-200">線上課程平台</a>
+                </h1>
+                <div class="space-x-4">
+                    <a href="{% url 'courses:course-list' %}" class="hover:text-blue-200">課程列表</a>
+                    <a href="{% url 'courses:teacher-list' %}" class="hover:text-blue-200">老師列表</a>
+                    <a href="{% url 'courses:student-list' %}" class="hover:text-blue-200">學生列表</a>
+                    <a href="/admin/" class="hover:text-blue-200" target="_blank">管理後台</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要內容 -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- 訊息顯示 -->
+        {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+            <div
+                class="alert alert-{{ message.tags }} bg-{% if message.tags == 'error' %}red{% elif message.tags == 'warning' %}yellow{% else %}green{% endif %}-100 border border-{% if message.tags == 'error' %}red{% elif message.tags == 'warning' %}yellow{% else %}green{% endif %}-400 text-{% if message.tags == 'error' %}red{% elif message.tags == 'warning' %}yellow{% else %}green{% endif %}-700 px-4 py-3 rounded mb-4">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}
+        <!-- 首頁內容：只有直接造訪首頁時會顯示這一段；其他頁面 extends 後會被各自的 content 覆蓋 -->
+        <div class="text-center py-16">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">歡迎來到線上課程平台</h2>
+            <p class="text-gray-600 mb-8">瀏覽課程、認識老師，開始你的學習旅程</p>
+            <a href="{% url 'courses:course-list' %}"
+                class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+                查看所有課程
+            </a>
+        </div>
+        {% endblock %}
+    </main>
+
+    <!-- 頁腳 -->
+    <footer class="bg-gray-800 text-white text-center py-4 mt-12">
+        <p>&copy; 2026 線上課程平台. All rights reserved.</p>
+    </footer>
+</body>
+
+</html>

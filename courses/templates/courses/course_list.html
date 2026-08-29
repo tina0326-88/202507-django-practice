@@ -1,0 +1,33 @@
+{% extends 'home.html' %}
+
+{% block title %}課程列表 - 線上課程平台{% endblock %}
+
+{% block content %}
+<h2 class="text-2xl font-bold text-gray-800 mb-6">課程列表</h2>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for course in courses %}
+    <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ course.title }}</h3>
+        <p class="text-gray-600 text-sm mb-4">{{ course.description|truncatewords:20 }}</p>
+
+        <div class="flex justify-between items-center text-sm text-gray-500 mb-4">
+            <span>老師：
+                {% for teacher in course.teachers.all %}
+                {{ teacher.name }}{% if not forloop.last %}、{% endif %}
+                {% empty %}
+                未指派
+                {% endfor %}
+            </span>
+        </div>
+
+        <a href="{% url 'courses:course-detail' course.pk %}"
+            class="block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+            查看詳情
+        </a>
+    </div>
+    {% empty %}
+    <p class="text-gray-500 col-span-full text-center py-12">目前還沒有任何課程</p>
+    {% endfor %}
+</div>
+{% endblock %}

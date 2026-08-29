@@ -1,0 +1,39 @@
+{% extends 'home.html' %}
+
+{% block title %}老師列表 - 線上課程平台{% endblock %}
+
+{% block content %}
+<h2 class="text-2xl font-bold text-gray-800 mb-6">老師列表</h2>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for teacher in teachers %}
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-1">{{ teacher.name }}</h3>
+        <p class="text-sm text-gray-500 mb-3">{{ teacher.email }}</p>
+
+        {% if teacher.bio %}
+        <p class="text-gray-600 text-sm mb-4">{{ teacher.bio }}</p>
+        {% endif %}
+
+        <div class="border-t pt-3">
+            <p class="text-sm font-semibold text-gray-700 mb-2">教授課程</p>
+            {% if teacher.courses.all %}
+            <ul class="space-y-1">
+                {% for course in teacher.courses.all %}
+                <li>
+                    <a href="{% url 'courses:course-detail' course.pk %}" class="text-blue-600 hover:underline text-sm">
+                        {{ course.title }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-gray-400 text-sm">目前沒有教授中的課程</p>
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-gray-500 col-span-full text-center py-12">目前還沒有任何老師資料</p>
+    {% endfor %}
+</div>
+{% endblock %}
