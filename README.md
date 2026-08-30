@@ -28,23 +28,27 @@
 
 ### 課程列表（Course List）
 
-<img width="2510" height="1125" alt="課程列表" src="https://github.com/user-attachments/assets/53ac46ab-8b08-475a-8f4e-fc398861ea7d" />
+<img width="2520" height="1143" alt="螢幕擷取畫面 (182)" src="https://github.com/user-attachments/assets/0a0bad59-3c60-459d-98f1-f5fa67a9436b" />
 
 ### 課程詳情（Course Detail）
 
-<img width="2504" height="1143" alt="課程詳情" src="https://github.com/user-attachments/assets/1b4aa542-abd0-4048-b9cf-9cbfaa26b61c" />
+<img width="2552" height="1147" alt="螢幕擷取畫面 (183)" src="https://github.com/user-attachments/assets/a3629e3b-36e3-4069-8a31-1ad48194c1a2" />
 
 ### 老師列表（Teacher List）
 
-<img width="2505" height="1124" alt="老師列表" src="https://github.com/user-attachments/assets/2b1bfe83-b996-4837-ac2e-84cbe88ad163" />
+<img width="2557" height="1152" alt="螢幕擷取畫面 (184)" src="https://github.com/user-attachments/assets/4407d323-344b-4ae7-b6e1-2f20c76b4a77" />
 
 ### 學生列表（Student List）
 
-<img width="2496" height="1129" alt="學生列表" src="https://github.com/user-attachments/assets/9999ee52-9f17-497e-a054-e178e7846af9" />
+<img width="2528" height="1152" alt="螢幕擷取畫面 (185)" src="https://github.com/user-attachments/assets/75363e8c-9def-4da7-9d22-438feb6b9736" />
 
 ### Django Admin 後台管理
 
-<img width="2509" height="1120" alt="Django Admin" src="https://github.com/user-attachments/assets/abb619b5-a760-4779-810a-ce65b0bafec4" />
+<img width="2521" height="1140" alt="螢幕擷取畫面 (186)" src="https://github.com/user-attachments/assets/d1c94111-5524-4b22-8058-93686d7c4bd8" />
+
+### Django REST framework
+
+<img width="2518" height="1152" alt="螢幕擷取畫面 (190)" src="https://github.com/user-attachments/assets/b4ebaa36-bad4-4d78-8652-ec35555f0ea3" />
 
 ## 技術架構
 
@@ -86,7 +90,7 @@ flowchart TD
 
 ## 資料模型
 
-<img width="1029" height="437" alt="線上課程平台" src="https://github.com/user-attachments/assets/aae1510b-445f-4537-bf22-65d2e9e4cf9f" />
+<img width="955" height="492" alt="線上課程平台" src="https://github.com/user-attachments/assets/6f7a0116-27a8-495b-9324-8effba8563db" />
 
 ### Teacher
 
