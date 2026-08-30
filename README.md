@@ -313,7 +313,7 @@ GET /api/courses/?search=英文&teacher=1
 ### 1. Clone 專案
 
 ```bash
-git clone https://github.com/tina0326-88/202507-online-course.git
+git clone https://github.com/tina0326-88/202507-django-practice.git
 cd 202507-online-course
 ```
 
