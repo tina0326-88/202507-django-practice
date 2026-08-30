@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
+from django.db.models import Q
 from rest_framework import generics, status, permissions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -17,10 +18,45 @@ from .serializers import (
 def home(request):
     return render(request, 'home.html')
 
-# 課程列表
+# 課程列表（支援關鍵字搜尋 + 依老師篩選）
 def course_list(request):
-    courses = Course.objects.all()
-    return render(request, 'courses/course_list.html', {'courses': courses})
+    courses = Course.objects.all().prefetch_related('teachers')
+
+    search = request.GET.get('search', '').strip()
+    teacher_param = request.GET.get('teacher', '').strip()
+
+    # 把老師 id 轉成整數（轉換失敗或空值就當作沒有篩選）
+    selected_teacher_id = None
+    if teacher_param.isdigit():
+        selected_teacher_id = int(teacher_param)
+
+    if search:
+        courses = courses.filter(
+            Q(title__icontains=search) |
+            Q(description__icontains=search) |
+            Q(teachers__name__icontains=search)
+        ).distinct()
+
+    if selected_teacher_id:
+        courses = courses.filter(teachers__id=selected_teacher_id)
+
+    # 事先算好每個老師是否為目前選中的老師，
+    # 模板裡就不用寫比較運算子，避免編輯器格式化把 == 兩側空白吃掉造成語法錯誤
+    teachers_for_filter = [
+        {
+            'id': teacher.id,
+            'name': teacher.name,
+            'selected': (teacher.id == selected_teacher_id),
+        }
+        for teacher in Teacher.objects.all()
+    ]
+
+    return render(request, 'courses/course_list.html', {
+        'courses': courses,
+        'teachers_for_filter': teachers_for_filter,
+        'search': search,
+        'selected_teacher_id': selected_teacher_id,
+    })
 
 # 課程詳情
 def course_detail(request, pk):
@@ -66,18 +102,52 @@ def student_list(request):
 # -----------------------------
 
 class TeacherListCreateView(generics.ListCreateAPIView):
+    """
+    老師列表：GET 公開，POST（新增老師）僅限管理員
+    """
     queryset = Teacher.objects.all()
     serializer_class = TeacherSerializer
 
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [permissions.IsAdminUser()]
+        return [permissions.AllowAny()]
+
 
 class StudentListCreateView(generics.ListCreateAPIView):
+    """
+    學生列表：GET / POST 皆公開（依 README 規格，學生可自行報名系統時自行註冊）
+    """
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
 
 
 class CourseListView(generics.ListAPIView):
-    queryset = Course.objects.all().prefetch_related('teachers')
+    """
+    課程列表，支援：
+    - ?search=關鍵字   （比對課程標題、說明、授課老師姓名）
+    - ?teacher=老師id  （只顯示該老師教授的課程）
+    可同時使用，例如 /api/courses/?search=英文&teacher=1
+    """
     serializer_class = CourseSerializer
+
+    def get_queryset(self):
+        queryset = Course.objects.all().prefetch_related('teachers')
+
+        search = self.request.query_params.get('search')
+        teacher_id = self.request.query_params.get('teacher')
+
+        if search:
+            queryset = queryset.filter(
+                Q(title__icontains=search) |
+                Q(description__icontains=search) |
+                Q(teachers__name__icontains=search)
+            ).distinct()
+
+        if teacher_id:
+            queryset = queryset.filter(teachers__id=teacher_id)
+
+        return queryset
 
 
 class CourseDetailView(generics.RetrieveAPIView):

@@ -84,7 +84,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
@@ -146,4 +145,4 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True  # 開發用，生產環境請設為 False
+CORS_ALLOW_ALL_ORIGINS = True  # 開發用，生產環境設為 False

@@ -51,13 +51,34 @@ class TeacherAPITests(APITestCase):
         )
 
     def test_list_teachers(self):
+        """老師列表公開，不需登入"""
         url = reverse("teacher-list-create")
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(len(response.data["results"]), 1)
 
-    def test_create_teacher(self):
+    def test_create_teacher_requires_admin(self):
+        """未登入的一般訪客不能新增老師"""
+        url = reverse("teacher-list-create")
+        payload = {
+            "name": "李老師",
+            "email": "teacher_lee@example.com",
+            "bio": "數學老師",
+        }
+        response = self.client.post(url, payload, format="json")
+        self.assertIn(
+            response.status_code,
+            [status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN],
+        )
+        self.assertEqual(Teacher.objects.count(), 1)
+
+    def test_create_teacher_as_admin_succeeds(self):
+        """管理員登入後可以新增老師"""
+        admin = User.objects.create_user(
+            username="admin3", password="testpass123", is_staff=True
+        )
+        self.client.force_authenticate(user=admin)
         url = reverse("teacher-list-create")
         payload = {
             "name": "李老師",
@@ -69,6 +90,11 @@ class TeacherAPITests(APITestCase):
         self.assertEqual(Teacher.objects.count(), 2)
 
     def test_create_teacher_duplicate_email_fails(self):
+        """即使是管理員，重複的 email 依然要被擋下來"""
+        admin = User.objects.create_user(
+            username="admin4", password="testpass123", is_staff=True
+        )
+        self.client.force_authenticate(user=admin)
         url = reverse("teacher-list-create")
         payload = {
             "name": "重複信箱老師",
@@ -182,3 +208,55 @@ class EnrollmentAPITests(APITestCase):
         payload = {"student_id": 9999, "course_id": self.course.id}
         response = self.client.post(url, payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class CourseSearchAPITests(APITestCase):
+    def setUp(self):
+        self.teacher_wang = Teacher.objects.create(
+            name="王老師", email="teacher_wang@example.com"
+        )
+        self.teacher_lee = Teacher.objects.create(
+            name="李老師", email="teacher_lee@example.com"
+        )
+        self.course_english = Course.objects.create(
+            title="英文入門", description="基礎文法與聽力練習"
+        )
+        self.course_english.teachers.add(self.teacher_wang)
+
+        self.course_math = Course.objects.create(
+            title="數學入門", description="基礎代數與幾何"
+        )
+        self.course_math.teachers.add(self.teacher_lee)
+
+    def test_search_by_title(self):
+        url = reverse("course-list")
+        response = self.client.get(url, {"search": "英文"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(response.data["results"][0]["title"], "英文入門")
+
+    def test_search_by_teacher_name(self):
+        url = reverse("course-list")
+        response = self.client.get(url, {"search": "李老師"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(response.data["results"][0]["title"], "數學入門")
+
+    def test_filter_by_teacher_id(self):
+        url = reverse("course-list")
+        response = self.client.get(url, {"teacher": self.teacher_wang.id})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(response.data["results"][0]["title"], "英文入門")
+
+    def test_search_no_match_returns_empty(self):
+        url = reverse("course-list")
+        response = self.client.get(url, {"search": "不存在的課程"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 0)
+
+    def test_no_search_params_returns_all(self):
+        url = reverse("course-list")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 2)

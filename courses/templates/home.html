@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-50 min-h-screen">
+<body class="bg-gray-50 min-h-screen flex flex-col">
     <!-- 導航欄 -->
     <nav class="bg-blue-600 text-white shadow-lg">
         <div class="container mx-auto px-4 py-3">
@@ -26,8 +26,8 @@
         </div>
     </nav>
 
-    <!-- 主要內容 -->
-    <main class="container mx-auto px-4 py-8">
+    <!-- 主要內容：flex-grow 讓這個區塊自動撐滿剩餘空間，把 footer 推到最底 -->
+    <main class="container mx-auto px-4 py-8 flex-grow">
         <!-- 訊息顯示 -->
         {% if messages %}
         <div class="mb-6">
@@ -41,7 +41,6 @@
         {% endif %}
 
         {% block content %}
-        <!-- 首頁內容：只有直接造訪首頁時會顯示這一段；其他頁面 extends 後會被各自的 content 覆蓋 -->
         <div class="text-center py-16">
             <h2 class="text-3xl font-bold text-gray-800 mb-4">歡迎來到線上課程平台</h2>
             <p class="text-gray-600 mb-8">瀏覽課程、認識老師，開始你的學習旅程</p>
@@ -53,8 +52,8 @@
         {% endblock %}
     </main>
 
-    <!-- 頁腳 -->
-    <footer class="bg-gray-800 text-white text-center py-4 mt-12">
+    <!-- 頁腳：不用再自己加 mt-12，flex-grow 已經把它推到底部了 -->
+    <footer class="bg-gray-800 text-white text-center py-4">
         <p>&copy; 2026 線上課程平台. All rights reserved.</p>
     </footer>
 </body>
