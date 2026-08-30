@@ -275,7 +275,7 @@ GET /api/courses/?search=英文&teacher=1
 ## 專案架構
 
 ```
-202507-online-course/
+202507-django-practice/
 ├── manage.py
 ├── requirements.txt
 ├── .env                   # 環境變數（不上傳至 GitHub）
